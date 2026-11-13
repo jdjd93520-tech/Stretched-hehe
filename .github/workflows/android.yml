@@ -4,6 +4,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,10 +21,11 @@ jobs:
           curl -fsSLo /tmp/gradle.zip https://services.gradle.org/distributions/gradle-8.7-bin.zip
           unzip -q /tmp/gradle.zip -d /tmp
           echo "/tmp/gradle-8.7/bin" >> "$GITHUB_PATH"
-      - name: Install Android SDK
-        run: |
-          yes | sdkmanager --licenses
-          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+          accept-android-sdk-licenses: true
       - name: Build debug APK
         run: gradle --no-daemon :app:assembleDebug
       - uses: actions/upload-artifact@v4
