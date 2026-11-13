@@ -41,6 +41,12 @@ jobs:
           unzip -q 'DisplayHotKeysAndroid-project (1).zip' -d source
           test -f source/DisplayHotKeysAndroid/app/build.gradle
 
+      - name: Apply Android public API compatibility fix
+        working-directory: source/DisplayHotKeysAndroid
+        run: |
+          sed -i 's/d\.getUniqueId()/String.valueOf(d.getDisplayId())/' app/src/main/java/com/example/displayhotkeys/MainActivity.java
+          sed -i 's/displays.get(i)\.getUniqueId()\.equals(unique)/String.valueOf(displays.get(i).getDisplayId()).equals(unique)/' app/src/main/java/com/example/displayhotkeys/MainActivity.java
+
       - name: Build debug APK
         working-directory: source/DisplayHotKeysAndroid
         run: gradle --no-daemon assembleDebug
